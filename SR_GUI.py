@@ -187,18 +187,20 @@ def run_SR(inpath, outpath, raw_sheet_settings, raw_trial_settings, raw_epoch_se
             prog_bar.update(f_ct)
             
             ## set input/output info
-            ID,ctx,anim = srf.animal_read(inpath,file,sheet)
-            print('\nEvaluating '+ sheet + ' in the file '+ file)
-            # print(ctx)
-            # print(ID)
-            skipFlag=False
-            # Check the context, skipping if the file isn't an excel sheet or properly labeled
-            if(ID == "-1" or ID=="nan" or (isinstance(ID,float) and math.isnan(float(ID)))or (isinstance(ID,int) and ID==-1)):
-                print('Animal Detection Failure: failed to load sheet or animal ID not found')
-                print(ID)
-                print('\n')
-                print(ctx)
-                continue
+ID,ctx,anim = srf.animal_read(inpath,file,sheet)
+print('\nEvaluating '+ sheet + ' in the file '+ file)
+# print(ctx)
+# print(ID)
+skipFlag=False
+# Check the context, skipping if the file isn't an excel sheet or properly labeled
+if ID == "-1":  # Only skip if sheet failed to load completely
+    print('Sheet Loading Failure: failed to load sheet')
+    print(ID)
+    continue
+# If animal ID is missing, print warning but continue anyway
+if ID=="nan" or (isinstance(ID,float) and math.isnan(float(ID))) or (isinstance(ID,int) and ID==-1):
+    print('Animal ID not found, but continuing anyway with default ID')
+    ID = "DEFAULT_ID"  # Set a default ID
             else:
                 for i in range(0,len(detectionSettingsLabel)):
                     # print(detectionSettingsLabel[i])
